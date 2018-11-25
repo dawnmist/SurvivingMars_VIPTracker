@@ -3,7 +3,7 @@
 This mod is Gagarin compatible (both base game and with Space Race).
 
 This mod enables you to mark individual colonists as ones that you wish to track.  
-![VIP Toggle](Images/PreviewVIPButton.png)  
+![VIP Toggle](Preview.png)  
 These colonists are given a Quirk called "VIP" so that they can be listed in the Colony Command Center colonist filters.  
 ![VIP Colonist Filter](Images/LivingVIPs.png)  
 Double-clicking on a colonist in this colonist list will zoom you to where they are.
