@@ -7,5 +7,5 @@
 #    git archive --format zip -o C:\Users\Username\VIPTracker_1.0.0.zip master
 Images export-ignore
 UI/*.xcf export-ignore
-README.md
+README.md export-ignore
 .gitattributes export-ignore
