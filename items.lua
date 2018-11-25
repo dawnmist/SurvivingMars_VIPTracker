@@ -17,7 +17,7 @@ PlaceObj('ModItemXTemplate', {
 	}, {
 		PlaceObj('XTemplateTemplate', {
 			'__template', "CommandCenterTitle",
-			'Title', T{127432512078, --[[ModItemXTemplate VIPDeadOverview Title]] "DECEASED VIPS"},
+			'Title', T{987234920023, --[[ModItemXTemplate VIPDeadOverview Title]] "DECEASED VIPS"},
 		}),
 		PlaceObj('XTemplateWindow', {
 			'__class', "XContentTemplate",
@@ -60,7 +60,7 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{626550596975, --[[ModItemXTemplate VIPDeadOverview Text]] "Sol Died"},
+						'Text', T{987234920024, --[[ModItemXTemplate VIPDeadOverview Text]] "Died"},
 						'WordWrap', false,
 						'TextHAlign', "center",
 						'TextVAlign', "center",
@@ -76,7 +76,7 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{389850991042, --[[ModItemXTemplate VIPDeadOverview Text]] "Age"},
+						'Text', T{987234920025, --[[ModItemXTemplate VIPDeadOverview Text]] "Age"},
 						'WordWrap', false,
 						'TextHAlign', "center",
 						'TextVAlign', "center",
@@ -92,7 +92,7 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{104279116128, --[[ModItemXTemplate VIPDeadOverview Text]] "Cause"},
+						'Text', T{987234920026, --[[ModItemXTemplate VIPDeadOverview Text]] "Cause"},
 						'WordWrap', false,
 						'TextHAlign', "left",
 						'TextVAlign', "center",

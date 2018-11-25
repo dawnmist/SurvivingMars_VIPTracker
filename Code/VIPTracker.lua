@@ -82,22 +82,43 @@ local function GetDeathReason(colonist)
 end
 
 local function VIPDeathNotification(colonist)
-	local Reason = GetDeathReason(colonist)
+	local NotificationId = "VIPTracker_VIPDeathNotice"
+	local existingIndex = table.find(g_ActiveOnScreenNotifications, 1, NotificationId)
+	local cycle_objs = { colonist }
+	if existingIndex then
+		table.append(cycle_objs, g_ActiveOnScreenNotifications[existingIndex][3].cycle_objs)
+	end
+
 	CreateRealTimeThread(
 		function()
 			AddCustomOnScreenNotification(
-				"VIPTracker_VIPDeathNotice",
-				T{987234920003, "VIP <Name> died!"},
-				T{987234920004, "Died from <Reason>"},
+				NotificationId,
+				T{987234920003, "<Count> <Plural> died: <Name>"},
+				T{987234920029, "<Reason>"},
 				DeathNotificationIcon,
-				nil,
+				function(cur_obj, params, res)
+					local dlg = Dialogs.OnScreenNotificationsDlg
+					if dlg then
+						local popup = table.find_value(dlg.idNotifications, "notification_id", NotificationId)
+						if popup then
+							popup.idTitle:SetText(T{987234920003, "<Count> <Plural> died: <Name>",
+								Count = params.Count,
+								Plural = params.Plural,
+								Name = cur_obj.name
+							})
+							popup.idText:SetText(T{987234920029, "<Reason>", Reason = cur_obj.vip_died_reason})
+						end
+					end
+				end,
 				{
-					DeadColonist = colonist,
+					Count = #cycle_objs,
+					Plural = #cycle_objs > 1 and T{987234920028, "VIPs"} or T{987234920001,"VIP"},
 					Name = colonist.name,
-					Reason = Reason,
+					Reason = colonist.vip_died_reason,
 					expiration = 75000,
 					priority = "Important",
-					cycle_objs = { colonist } 
+					game_time = true,
+					cycle_objs = cycle_objs
 				}
 			)
 		end
@@ -242,10 +263,10 @@ end
 
 function OnMsg.ColonistDied(colonist, reason)
 	if colonist.traits[VIPTraitId] then
-		VIPDeathNotification(colonist, reason)
 		colonist.vip_died_sol = UICity.day
 		colonist.vip_died_reason = T{987234920004, "Died from <Reason>", Reason = GetDeathReason(colonist)}
-		table.insert(VIPTracker.DeceasedList, colonist)
+		table.insert(VIPTracker.DeceasedList, 1, colonist)
+		VIPDeathNotification(colonist, reason)
 	end
 end
 
