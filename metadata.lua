@@ -2,6 +2,7 @@ return PlaceObj('ModDef', {
 	'title', "VIP Tracker",
 	'id', "Dawnmist_VIPTracker",
 	'steam_id', "1574069378",
+	'image', "Preview.png",
 	'author', "Dawnmist",
 	'version', 5,
 	'lua_revision', 237920,
