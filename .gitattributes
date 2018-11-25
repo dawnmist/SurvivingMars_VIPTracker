@@ -2,9 +2,9 @@
 # Use this to create a clean copy of the mod suitable for upload to NexusMods or for extracting
 # and uploading to Steam Workshop.
 # Command:
-#    git archive --format zip -o /path/to/outfile.zip branchname_to_archive
+#    git archive --format zip -o /path/to/outfile.zip --prefix "<basedir>/" branchname_to_archive
 # e.g.
-#    git archive --format zip -o C:\Users\Username\VIPTracker_1.0.0.zip master
+#    git archive --format zip -o C:\Users\Username\VIPTracker_1.0.0.zip --prefix "VIPTracker/" master
 Images export-ignore
 UI/*.xcf export-ignore
 README.md export-ignore
