@@ -54,6 +54,14 @@ function UpdateUICommandCenterRow(self, context, row_type)
 	origUpdateUICommandCenterRow(self, context, row_type)
 end
 
+local function FixupDeathReasons()
+	local VIPTracker = VIPTracker
+	for i=1,#VIPTracker.DeceasedList do
+		local colonist = VIPTracker.DeceasedList[i]
+		colonist.vip_died_reason = GetDeathReason(colonist)
+	end
+end
+
 local function SetupSaveData()
 	GuruTraitBlacklist[VIPTraitId] = true
 	if not VIPTracker then
@@ -62,14 +70,9 @@ local function SetupSaveData()
 			DeceasedList = { name = "Deceased VIPs" },
 			Version = VIPTrackerMod.current_version
 		}
-	elseif VIPTracker.Version == nil then
+	elseif VIPTracker.Version == nil or VIPTracker.Version < 8 then
 		-- fixup death reasons based on changes from initial release
-		-- initial release was missing the Version field by mistake
-		local VIPTracker = VIPTracker
-		for i=1,#VIPTracker.DeceasedList do
-			local colonist = VIPTracker.DeceasedList[i]
-			colonist.vip_died_reason = GetDeathReason(colonist)
-		end
+		DelayedCall(1000, FixupDeathReasons)
 	end
 
 	VIPTracker.Version = VIPTrackerMod.current_version
