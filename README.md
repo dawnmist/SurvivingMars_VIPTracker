@@ -26,26 +26,3 @@ Other people that helped with working out how to make parts of the mod work incl
 
 Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=1574069378  
 NexusMods: https://www.nexusmods.com/survivingmars/mods/99
-
-## Mod Integration
-
-If you have a mod that adds extra "types" of deaths, it is possible to add to the list of death reasons used in the VIP death notifications and Deceased VIP lists.
-
-To detect if the VIP Tracker mod is active:
-```lua
-function OnMsg.VIPTrackerModLoaded(vip_tracker_version_number)
-end
-```
-
-Inside this message handler, you can use the function `VIPTrackerMod.Functions.AddDeathReason(reason, reason_msg)` where the `reason` field is what gets stored in `colonist.dying_reason`, and the `reason_msg` field is the translatable message to display in notifications/deceased list for that reason. Note that the reason message will have "Died from" prepended to the message.
-
-e.g.
-```lua
-function OnMsg.VIPTrackerModLoaded(vip_tracker_version_number)
-    local AddDeathReason = VIPTrackerMod.Functions.AddDeathReason
-    
-    AddDeathReason('fell', T{123456789, "falling off a balcony"})
-    AddDeathReason('fright', T{123456790, "being scared to death"})
-    ...
-end
-```

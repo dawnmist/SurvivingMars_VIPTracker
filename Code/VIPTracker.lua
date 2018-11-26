@@ -19,40 +19,29 @@ VIPTrackerMod = {
 -- To update, @see SurvivingMars/Lua/_GameConst.lua
 local VIPDeathReasons = 
 {
-	["meteor"]              = T{987234920005, "a meteor impact"},
-	["lighting strike"]     = T{987234920006, "being struck by lighting"},
-	["fuel explosion"]      = T{987234920007, "a fuel explosion"},
-	["low health"]          = T{987234920008, "low health"},
-	["Old age"]             = T{987234920009, "old age"},
-	["could not reach dome"]= T{987234920010, "their spacesuit running out of Oxygen"},
-	["could not find dome"] = T{987234920010, "their spacesuit running out of Oxygen"},
-	["suicide"]             = T{987234920011, "suicide (low sanity)"},
-	["rogue drone"]         = T{987234920012, "being killed by a rogue machine"},
+	["meteor"]              = T{987234920005, "Died from a meteor impact"},
+	["lighting strike"]     = T{987234920006, "Died from being struck by lighting"},
+	["fuel explosion"]      = T{987234920007, "Died from a fuel explosion"},
+	["low health"]          = T{987234920008, "Died from low health"},
+	["Old age"]             = T{987234920009, "Died from old age"},
+	["could not reach dome"]= T{987234920010, "Died from their spacesuit running out of Oxygen"},
+	["could not find dome"] = T{987234920010, "Died from their spacesuit running out of Oxygen"},
+	["suicide"]             = T{987234920011, "Died from suicide (low sanity)"},
+	["rogue drone"]         = T{987234920012, "Died from being killed by a rogue machine"},
 
-	["StatusEffect_Suffocating"]         = T{987234920013, "suffocation"},
-	["StatusEffect_Suffocating_Outside"] = T{987234920013, "suffocation"},
+	["StatusEffect_Suffocating"]         = T{987234920013, "Died from suffocation"},
+	["StatusEffect_Suffocating_Outside"] = T{987234920013, "Died from suffocation"},
 
-	["StatusEffect_Dehydrated"] = T{987234920014, "dehydration"},
-	["StatusEffect_Freezing"]   = T{987234920015, "hypothermia"},
-	["StatusEffect_Starving"]   = T{987234920016, "starvation"},
+	["StatusEffect_Dehydrated"] = T{987234920014, "Died from dehydration"},
+	["StatusEffect_Freezing"]   = T{987234920015, "Died from hypothermia"},
+	["StatusEffect_Starving"]   = T{987234920016, "Died from starvation"},
 
-	["StoryBit"]     = T{987234920017, "extenuating circumstances"},
-	["DustSickness"] = T{987234920018, "dust sickness"},
+	["StoryBit"]     = T{987234920017, "Died from extenuating circumstances"},
+	["DustSickness"] = T{987234920018, "Died from dust sickness"},
 
 	-- used if no reason was given...maybe someone murdered them... ;)
-	["unknown"] = T{987234920019, "mysterious circumstances"},
+	["unknown"] = T{987234920019, "Died from mysterious circumstances"},
 }
-
--- Allow other mods to register additional death reasons.
--- "reason" => the value stored in colonist.dying_reason
--- "reason_msg" => translated string to display with "<colonist.name> has died from <reason_msg>".
--- if not specified, reason itself will be displayed by default.
--- This function should be used inside the VIPTrackerModLoaded message handler.
-VIPTrackerMod.Functions.AddDeathReason = function(reason, reason_msg)
-	if not VIPDeathReasons[reason] and reason and reason_msg then
-		VIPDeathReasons[reason] = reason_msg
-	end
-end
 
 local origUpdateUICommandCenterRow = UpdateUICommandCenterRow
 function UpdateUICommandCenterRow(self, context, row_type)
@@ -70,15 +59,27 @@ local function SetupSaveData()
 	if not VIPTracker then
 		VIPTracker = {
 			ColonistsHaveArrived = UICity and UICity.labels.Colonist and #UICity.labels.Colonist > 0 or false,
-			DeceasedList = { name = "Deceased VIPs" }
+			DeceasedList = { name = "Deceased VIPs" },
+			Version = VIPTrackerMod.current_version
 		}
+	elseif VIPTracker.Version == nil then
+		-- fixup death reasons based on changes from initial release
+		-- initial release was missing the Version field by mistake
+		local VIPTracker = VIPTracker
+		for i=1,#VIPTracker.DeceasedList do
+			local colonist = VIPTracker.DeceasedList[i]
+			colonist.vip_died_reason = GetDeathReason(colonist)
+		end
 	end
+
+	VIPTracker.Version = VIPTrackerMod.current_version
 end
 
 local function GetDeathReason(colonist)
 	local reason = colonist.dying_reason
 	return (reason and VIPDeathReasons[reason] ~= nil and VIPDeathReasons[reason])
-		or reason or VIPDeathReasons["unknown"]
+		or reason and DeathReasons[reason]
+		or VIPDeathReasons["unknown"]
 end
 
 local function VIPDeathNotification(colonist)
@@ -94,7 +95,7 @@ local function VIPDeathNotification(colonist)
 			AddCustomOnScreenNotification(
 				NotificationId,
 				T{987234920003, "<Count> <Plural> died: <Name>"},
-				T{987234920029, "<Reason>"},
+				T{987234920004, "<Reason>"},
 				DeathNotificationIcon,
 				function(cur_obj, params, res)
 					local dlg = Dialogs.OnScreenNotificationsDlg
@@ -106,7 +107,7 @@ local function VIPDeathNotification(colonist)
 								Plural = params.Plural,
 								Name = cur_obj.name
 							})
-							popup.idText:SetText(T{987234920029, "<Reason>", Reason = cur_obj.vip_died_reason})
+							popup.idText:SetText(T{987234920004, "<Reason>", Reason = cur_obj.vip_died_reason})
 						end
 					end
 				end,
@@ -250,10 +251,6 @@ function OnMsg.ClassesPostprocess()
 	AddVIPDeadCategory()
 end
 
-function OnMsg.ModsReloaded()
-	Msg("VIPTrackerModLoaded", VIPTrackerMod.current_version)
-end
-
 function OnMsg.ColonistArrived()
 	local VIPTracker = VIPTracker
 	if not VIPTracker.ColonistsHaveArrived then
@@ -264,7 +261,7 @@ end
 function OnMsg.ColonistDied(colonist, reason)
 	if colonist.traits[VIPTraitId] then
 		colonist.vip_died_sol = UICity.day
-		colonist.vip_died_reason = T{987234920004, "Died from <Reason>", Reason = GetDeathReason(colonist)}
+		colonist.vip_died_reason = T{987234920004, "<Reason>", Reason = GetDeathReason(colonist)}
 		table.insert(VIPTracker.DeceasedList, 1, colonist)
 		VIPDeathNotification(colonist, reason)
 	end
