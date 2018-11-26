@@ -24,7 +24,7 @@ Other people that helped with working out how to make parts of the mod work incl
 
 ## Downloading the mod
 
-Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=1574069378
+Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=1574069378  
 NexusMods: https://www.nexusmods.com/survivingmars/mods/99
 
 ## Mod Integration
