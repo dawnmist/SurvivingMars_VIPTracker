@@ -33,7 +33,7 @@ If you have a mod that adds extra "types" of deaths, it is possible to add to th
 
 To detect if the VIP Tracker mod is active:
 ```lua
-function OnMsg.VIPTrackerModLoaded()
+function OnMsg.VIPTrackerModLoaded(vip_tracker_version_number)
 end
 ```
 
@@ -41,7 +41,7 @@ Inside this message handler, you can use the function `VIPTrackerMod.Functions.A
 
 e.g.
 ```lua
-function OnMsg.VIPTrackerModLoaded()
+function OnMsg.VIPTrackerModLoaded(vip_tracker_version_number)
     local AddDeathReason = VIPTrackerMod.Functions.AddDeathReason
     
     AddDeathReason('fell', T{123456789, "falling off a balcony"})
