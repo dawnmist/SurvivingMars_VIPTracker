@@ -4,6 +4,7 @@ GlobalVar("VIPTracker", false)
 local ModId = "Dawnmist_VIPTracker"
 local VIPTraitId = "VIPTrackerTrait"
 local VIPDeadId = "VIPTrackerDead"
+local VIPActivityLogId = "VIPTrackerActivityLog"
 local mod_dir = CurrentModPath
 
 local ColonistActiveVIPIcon = mod_dir.."UI/AllGold.png"
@@ -50,6 +51,13 @@ function UpdateUICommandCenterRow(self, context, row_type)
 		self.ageAtDeath:SetText(context.age)
 		self.deathReason:SetText(context.vip_died_reason)
 		self.idSpecialization:SetImage(context.pin_specialization_icon)
+	elseif row_type == "VIPActivityLog" then
+		self.idButtonIcon:SetImage(context.pin_icon)
+		self.idSpecialization:SetImage(context.pin_specialization_icon)
+		self.name:SetText(context.name)
+		self.sol:SetText(context.sol)
+		self.log_msg:SetText(context.log_msg)
+		return
 	end
 	origUpdateUICommandCenterRow(self, context, row_type)
 end
@@ -68,11 +76,15 @@ local function SetupSaveData()
 		VIPTracker = {
 			ColonistsHaveArrived = UICity and UICity.labels.Colonist and #UICity.labels.Colonist > 0 or false,
 			DepartedList = { name = "Departed VIPs" },
+			ActivityLog = { name = "VIP Activity Log" },
 			Version = VIPTrackerMod.current_version
 		}
 	elseif VIPTracker.Version == nil or VIPTracker.Version < 8 then
 		-- fixup death reasons based on changes from initial release
 		DelayedCall(1000, FixupDeathReasons)
+	end
+	if VIPTracker.ActivityLog == nil then
+		VIPTracker.ActivityLog = { name = "VIP Activity Log" }
 	end
 
 	VIPTracker.Version = VIPTrackerMod.current_version
@@ -287,10 +299,64 @@ local function AddVIPDeadCategory()
 	end
 end
 
+local function AddVIPActivityLogCategory()
+	local XTemplates = XTemplates
+	local PlaceObj = PlaceObj
+	local Presets = Presets
+
+	if not Presets.ColonyControlCenterCategory.Default[VIPActivityLogId] then
+		Presets.ColonyControlCenterCategory.Default[VIPActivityLogId] = PlaceObj('ColonyControlCenterCategory', {
+			SortKey = 89000,
+			display_name = T{987234920053,"VIP Activity Log"},
+			group = "Default",
+			id = VIPActivityLogId,
+			template_name = "VIPActivityOverview",
+			title = T{987234920054, "VIP ACTIVITY LOG"},
+		})
+	end
+
+	local CCC = XTemplates.ColonyControlCenter[1]
+	for i=1, #CCC do
+		if CCC[i].Id == "idContent" then
+			local idContent = CCC[i]
+			local modeNum
+			local mode = PlaceObj('XTemplateMode', {
+				'mode', VIPActivityLogId,
+			}, {
+				PlaceObj('XTemplateTemplate', {
+					'__template', "VIPActivityOverview"
+				})
+			})
+			for m = 1, #idContent do
+				if idContent[m].mode == VIPActivityLogId then
+					modeNum = m
+					break
+				end
+			end
+			if modeNum ~= nil then
+				idContent[modeNum] = mode
+			else
+				table.insert(idContent, mode)
+			end
+		end
+	end
+end
+
+local function AddActivityLog(colonist, msg)
+	table.insert(VIPTracker.ActivityLog, 1, {
+			pin_icon = colonist.pin_icon,
+			pin_specialization_icon = colonist.pin_specialization_icon,
+			name = colonist.name,
+			sol = UICity.day,
+			log_msg = msg
+		})
+end
+
 -- OnMsg functions
 function OnMsg.ClassesPostprocess()
 	CreateVIPTrait()
 	AddVIPToggleButton()
+	AddVIPActivityLogCategory()
 	AddVIPDeadCategory()
 end
 
@@ -298,6 +364,129 @@ function OnMsg.ColonistArrived()
 	local VIPTracker = VIPTracker
 	if not VIPTracker.ColonistsHaveArrived then
 		VIPTracker.ColonistsHaveArrived = true
+	end
+end
+
+function OnMsg.ColonistChangeWorkplace(colonist, new_workplace, old_workplace)
+	if colonist.traits[VIPTraitId] then
+		AddActivityLog(
+			colonist,
+			T{987234920032, "Changed job from <OldWorkplace> to <NewWorkplace>",
+				OldWorkplace =
+					old_workplace and old_workplace.display_name
+					or T{987234920039, "unemployed"},
+				NewWorkplace =
+					new_workplace and new_workplace.display_name
+					or T{987234920039, "unemployed"}
+			}
+	  );
+	end
+end
+
+function OnMsg.SanityBreakdown(colonist)
+	if colonist.traits[VIPTraitId] then
+		AddActivityLog(colonist, T{987234920034, "Suffered a Sanity breakdown"})
+	end
+end
+
+-- Would prefer to use "OnMsg.NewSpecialist" directly, but it doesn't provide the colonist info.
+local originalSetSpecialization = Colonist.SetSpecialization
+function Colonist.SetSpecialization(self, specialist, init)
+	if originalSetSpecialization ~= nil then
+		originalSetSpecialization(self, specialist, init)
+	end
+	if self.traits[VIPTraitId] and init == nil and specialist ~= nil and specialist ~= "none" then
+		AddActivityLog(
+			colonist,
+			T{987234920035, "Graduated as a <Specialist>", Specialist = specialist}
+		)
+	end
+end
+
+function OnMsg.ColonistJoinsDome(colonist, dome)
+	if colonist.traits[VIPTraitId] then
+		AddActivityLog(colonist, T{987234920036, "Moved to <Dome>", Dome = dome.name})
+	end
+end
+
+function OnMsg.ColonistAddTrait(colonist, trait_id, init)
+	if (colonist.traits[VIPTraitId] or trait_id == VIPTraitId) and init == nil then
+		local trait = TraitPresets[trait_id]
+		if not trait then
+			return
+		end
+
+		if trait_id == VIPTraitId then
+			AddActivityLog(colonist, T{987234920057,"Became a VIP"})
+		elseif trait.group == "Age Group" then
+			AddActivityLog(colonist, T{987234920033, "Aged to <NewAge>", NewAge = trait.display_name})
+		elseif trait.group == "Specialization" then
+			AddActivityLog(colonist, T{987234920035,"Graduated as a <Specialist>", Specialist = trait.display_name})
+		else
+			AddActivityLog(colonist, T{987234920037, "Gained the <Trait> trait", Trait = trait.display_name})
+		end
+	end
+end
+
+function OnMsg.ColonistRemoveTrait(colonist, trait_id)
+	if (colonist.traits[VIPTraitId] or trait_id == VIPTraitId) then
+		local trait = TraitPresets[trait_id]
+		if not trait then
+			return
+		end
+
+		if trait_id == VIPTraitId then
+			AddActivityLog(colonist, T{987234920058, "Is no longer a VIP"})
+		elseif trait.group ~= "Age Group" and trait.group ~= "Specialization" then
+			AddActivityLog(
+				colonist,
+				T{987234920038, "Lost the <Trait> trait", Trait = trait.display_name}
+			)
+		end
+	end
+end
+
+function OnMsg.ColonistStatusEffect(colonist, status_effect, bApply, now)
+	if colonist.traits[VIPTraitId] then
+		if status_effect == "StatusEffect_Starving" then
+			AddActivityLog(
+				colonist,
+				bApply and T{987234920040, "Suffering from starvation"}
+				or T{987234920041, "Is no longer starving"}
+			)
+		elseif status_effect == "StatusEffect_Homeless" then
+			AddActivityLog(
+				colonist,
+				bApply and T{987234920042, "Became homeless"}
+				or T{987234920043, "Is no longer homeless"}
+			)
+		elseif status_effect == "StatusEffect_Earthsick" then
+			AddActivityLog(
+				colonist,
+				bApply and T{987234920042, "Became Earthsick"}
+				or T{987234920045, "Is no longer Earthsick"}
+			)
+		elseif status_effect == "StatusEffect_Suffocating" then
+			AddActivityLog(
+				colonist,
+				bApply and T{987234920046, "Suffering from suffocation"}
+				or T{987234920047, "Is no longer suffering from suffocation"}
+			)
+		elseif status_effect == "StatusEffect_Dehydrated" then
+			AddActivityLog(
+				colonist,
+				bApply and T{987234920048,"Suffering from dehydration"}
+				or T{987234920049, "Is no longer dehydrated"}
+			)
+		elseif status_effect == "StatusEffect_Freezing" then
+			AddActivityLog(
+				colonist,
+				bApply and T{987234920050, "Suffering from freezing"}
+				or T{987234920051, "Is no longer freezing"}
+			)
+		elseif status_effect == "StatusEffect_Irradiated" and bApply then
+			AddActivityLog(colonist, T{987234920052, "Was Irradiated"})
+		end
 	end
 end
 

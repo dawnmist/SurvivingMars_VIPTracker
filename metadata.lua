@@ -10,11 +10,20 @@ return PlaceObj('ModDef', {
 	'author', "Dawnmist",
 	'version', 10,
 	'lua_revision', 237920,
-	'code', {"Code/VIPTracker.lua"},
+	'code', {
+		"Code/VIPTracker.lua"
+	},
 	'saved', 1543110572,
 	'TagInterface', true,
 	'TagTools', true,
 	'TagOther', true,
+	'ignore_files', {
+		"Images/*",
+		".git/*",
+		".gitattributes",
+		"README.md",
+		"UI/ColonistIconTemplate.xcf"
+	},
 	'description', [[
 [h1]VIP Tracker[/h1]
 
