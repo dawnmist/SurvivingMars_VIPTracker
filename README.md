@@ -11,9 +11,15 @@ Double-clicking on a colonist in this colonist list will zoom you to where they 
 When a VIP dies, the mod keeps track of their age at death, the Sol they died, and what their cause of death was.
 A notification is popped up that allows you to zoom to the dead VIP.  
 ![Notification](Images/NotificationPreview.png)  
-An additional option is also added to the Colony Command Center to view the list of deceased VIPs.  
+
+When a VIP boards a rocket to return to Earth, the mod keeps track of their age at time of boarding and the Sol that they boarded the rocket.
+A notification is popped up that allows you to cycle through the names of VIPs that are leaving Mars.  
+![Notification](Images/DepartingNotificationPreview.png)  
+
+An additional option is also added to the Colony Command Center to view the list of departed VIPs.
+This list includes both deceased VIPs and VIPs that returned to Earth.  
 ![Colony Command Center Option](Images/CommandCenterOption.png)  
-![Deceased VIP List](Images/DeceasedList.png)  
+![Deceased VIP List](Images/DepartedList.png)  
 
 ## Acknowledgements
 
