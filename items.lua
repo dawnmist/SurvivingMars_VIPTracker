@@ -17,7 +17,7 @@ PlaceObj('ModItemXTemplate', {
 	}, {
 		PlaceObj('XTemplateTemplate', {
 			'__template', "CommandCenterTitle",
-			'Title', T{987234920023, --[[ModItemXTemplate VIPDeadOverview Title]] "DECEASED VIPS"},
+			'Title', T{987234920023, --[[ModItemXTemplate VIPDeadOverview Title]] "DEPARTED VIPS"},
 		}),
 		PlaceObj('XTemplateWindow', {
 			'__class', "XContentTemplate",
@@ -60,7 +60,7 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{987234920024, --[[ModItemXTemplate VIPDeadOverview Text]] "Died"},
+						'Text', T{987234920024, --[[ModItemXTemplate VIPDeadOverview Text]] "Died/Left"},
 						'WordWrap', false,
 						'TextHAlign', "center",
 						'TextVAlign', "center",
@@ -86,8 +86,8 @@ PlaceObj('ModItemXTemplate', {
 						'__class', "XText",
 						'Id', "deathReason",
 						'Padding', box(0, 0, 0, 0),
-						'MinWidth', 255,
-						'MaxWidth', 255,
+						'MinWidth', 500,
+						'MaxWidth', 500,
 						'Clip', false,
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
@@ -115,9 +115,9 @@ PlaceObj('ModItemXTemplate', {
 					PlaceObj('XTemplateForEach', {
 						'comment', "deadVIPs",
 						'array', function (parent, context)
-							local DeceasedList = VIPTracker.DeceasedList
-							parent:ResolveId("idTitle"):SetTitle(T{987234920027, "<white><count></white> DECEASED VIPS", count = #DeceasedList})
-							return DeceasedList
+							local DepartedList = VIPTracker.DepartedList
+							parent:ResolveId("idTitle"):SetTitle(T{987234920027, "<white><count></white> DEPARTED VIPS", count = #DepartedList})
+							return DepartedList
 						end,
 						'__context', function (parent, context, item, i, n) return item end,
 						'run_before', function (parent, context, item, i, n)
@@ -221,8 +221,8 @@ PlaceObj('ModItemXTemplate', {
 			'Padding', box(0, 0, 0, 0),
 			'HAlign', "left",
 			'VAlign', "center",
-			'MinWidth', 255,
-			'MaxWidth', 255,
+			'MinWidth', 500,
+			'MaxWidth', 500,
 			'TextStyle', "OverviewItemValue",
 			'WordWrap', false,
 			'TextHAlign', "left",

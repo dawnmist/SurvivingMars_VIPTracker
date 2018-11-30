@@ -56,8 +56,8 @@ end
 
 local function FixupDeathReasons()
 	local VIPTracker = VIPTracker
-	for i=1,#VIPTracker.DeceasedList do
-		local colonist = VIPTracker.DeceasedList[i]
+	for i=1,#VIPTracker.DepartedList do
+		local colonist = VIPTracker.DepartedList[i]
 		colonist.vip_died_reason = GetDeathReason(colonist)
 	end
 end
@@ -67,7 +67,7 @@ local function SetupSaveData()
 	if not VIPTracker then
 		VIPTracker = {
 			ColonistsHaveArrived = UICity and UICity.labels.Colonist and #UICity.labels.Colonist > 0 or false,
-			DeceasedList = { name = "Deceased VIPs" },
+			DepartedList = { name = "Departed VIPs" },
 			Version = VIPTrackerMod.current_version
 		}
 	elseif VIPTracker.Version == nil or VIPTracker.Version < 8 then
@@ -119,6 +119,46 @@ local function VIPDeathNotification(colonist)
 					Plural = #cycle_objs > 1 and T{987234920028, "VIPs"} or T{987234920001,"VIP"},
 					Name = colonist.name,
 					Reason = colonist.vip_died_reason,
+					expiration = 75000,
+					priority = "Important",
+					game_time = true,
+					cycle_objs = cycle_objs
+				}
+			)
+		end
+	)
+end
+
+local function VIPLeavingNotification(colonist)
+	local NotificationId = "VIPTracker_VIPLeavingNotice"
+	local existingIndex = table.find(g_ActiveOnScreenNotifications, 1, NotificationId)
+	local cycle_objs = { colonist }
+	if existingIndex then
+		table.append(cycle_objs, g_ActiveOnScreenNotifications[existingIndex][3].cycle_objs)
+	end
+
+	CreateRealTimeThread(
+		function()
+			AddCustomOnScreenNotification(
+				NotificationId,
+				T{987234920030, "<Count> <Plural> leaving Mars"},
+				T{987234920031, "<Name>"},
+				DeathNotificationIcon,
+				function(cur_obj, params, res)
+					local dlg = Dialogs.OnScreenNotificationsDlg
+					if dlg then
+						local popup = table.find_value(dlg.idNotifications, "notification_id", NotificationId)
+						if popup then
+							popup.idText:SetText(T{987234920031, "<Name>",
+								Name = cur_obj.name
+							})
+						end
+					end
+				end,
+				{
+					Count = #cycle_objs,
+					Plural = #cycle_objs > 1 and T{987234920028, "VIPs"} or T{987234920001,"VIP"},
+					Name = colonist.name,
 					expiration = 75000,
 					priority = "Important",
 					game_time = true,
@@ -212,11 +252,11 @@ local function AddVIPDeadCategory()
 	if not Presets.ColonyControlCenterCategory.Default[VIPDeadId] then
 		Presets.ColonyControlCenterCategory.Default[VIPDeadId] = PlaceObj('ColonyControlCenterCategory', {
 			SortKey = 90000,
-			display_name = T{987234920022, "Deceased VIPs"},
+			display_name = T{987234920022, "Departed VIPs"},
 			group = "Default",
 			id = VIPDeadId,
 			template_name = "VIPDeadOverview",
-			title = T{987234920023, "DECEASED VIPS"},
+			title = T{987234920023, "DEPARTED VIPS"},
 		})
 	end
 
@@ -265,8 +305,17 @@ function OnMsg.ColonistDied(colonist, reason)
 	if colonist.traits[VIPTraitId] then
 		colonist.vip_died_sol = UICity.day
 		colonist.vip_died_reason = T{987234920004, "<Reason>", Reason = GetDeathReason(colonist)}
-		table.insert(VIPTracker.DeceasedList, 1, colonist)
+		table.insert(VIPTracker.DepartedList, 1, colonist)
 		VIPDeathNotification(colonist, reason)
+	end
+end
+
+function OnMsg.ColonistLeavingMars(colonist, rocket)
+	if colonist.traits[VIPTraitId] then
+		VIPLeavingNotification(colonist)
+		colonist.vip_died_sol = UICity.day
+		colonist.vip_died_reason = T{987234920029, "Abandoned Mars to return to Earth"}
+		table.insert(VIPTracker.DepartedList, 1, colonist)
 	end
 end
 
@@ -276,4 +325,13 @@ end
 
 function OnMsg.LoadGame()
 	SetupSaveData()
+end
+
+function OnMsg.PersistLoad(data)
+	local VIPTracker = VIPTracker
+	if VIPTracker.DeceasedList ~= nil and VIPTracker.DepartedList == nil then
+		VIPTracker.DepartedList = VIPTracker.DeceasedList
+		VIPTracker.DeceasedList = nil
+		print("Number of departed VIPs:", VIPTracker.DepartedList and #VIPTracker.DepartedList or 0)
+	end
 end

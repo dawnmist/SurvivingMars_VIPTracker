@@ -3,9 +3,12 @@ return PlaceObj('ModDef', {
 	'id', "Dawnmist_VIPTracker",
 	'steam_id', "1574069378",
 	'image', "Preview.png",
-	'last_changes', "Add Steam mod description",
+	'last_changes', [[
+* Rename "Deceased VIPs" to "Departed VIPs"
+* Add VIPs that return to Earth to the list of Departed VIPs.
+]],
 	'author', "Dawnmist",
-	'version', 9,
+	'version', 10,
 	'lua_revision', 237920,
 	'code', {"Code/VIPTracker.lua"},
 	'saved', 1543110572,
@@ -19,7 +22,11 @@ This mod is Gagarin compatible (both base game and with Space Race).
 
 This mod enables you to mark individual colonists as ones that you wish to track. These colonists are given a Quirk called "VIP" so that they can be listed in the Colony Command Center colonist filters. Double-clicking on a colonist in this colonist list will zoom you to where they are.
 
-When a VIP dies, the mod keeps track of their age at death, the Sol they died, and what their cause of death was. A notification is popped up that allows you to zoom to the dead VIP. An additional option is also added to the Colony Command Center to view the list of deceased VIPs.
+When a VIP dies, the mod keeps track of their age at death, the Sol they died, and what their cause of death was. A notification is popped up that allows you to zoom to the dead VIP.
+
+When a VIP boards a rocket to return to Earth, the mod keeps track of their age at time of boarding and the Sol that they boarded the rocket. A notification is popped up that allows you to cycle through the names of VIPs that are leaving Mars.
+
+An additional option is also added to the Colony Command Center to view the list of departed VIPs. This list includes both deceased VIPs and VIPs that returned to Earth.
 
 [h1]Acknowledgements[/h1]
 
