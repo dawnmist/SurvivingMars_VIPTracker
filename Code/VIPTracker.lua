@@ -353,8 +353,41 @@ local function AddVIPActivityLogCategory()
 	end
 end
 
+local function AdjustActivityLogSelect()
+	local XT = XTemplates.CommandCenterRow
+
+	if XT == nil then
+		return
+	end
+
+	for i=1,#XT[1] do
+		local item = XT[1][i]
+		if item ~= nil and item.name == "OnMouseButtonDoubleClick(self, pos, button)" then
+			local origFunc = item.func
+			item.func = function(self, pos, button)
+				if self.context.id == VIPActivityLogId then
+					if button == "L" then
+						local colonist = self.context.colonist
+						if colonist ~= nil and IsValid(colonist) and IsLiving(colonist) then
+								ViewObjectMars(colonist)
+								SelectObj(colonist)
+								CloseCommandCenter()
+								return "break"
+						end
+					end
+				else
+					return origFunc(self, pos, button)
+				end
+			end
+			return
+		end
+	end
+end
+
 local function AddActivityLog(colonist, msg)
 	table.insert(VIPTracker.ActivityLog, 1, {
+			id = VIPActivityLogId,
+			colonist = colonist,
 			pin_icon = colonist.pin_icon,
 			pin_specialization_icon = colonist.pin_specialization_icon,
 			name = colonist.name,
@@ -369,6 +402,7 @@ function OnMsg.ClassesPostprocess()
 	AddVIPToggleButton()
 	AddVIPActivityLogCategory()
 	AddVIPDeadCategory()
+	AdjustActivityLogSelect()
 end
 
 function OnMsg.ColonistArrived()
