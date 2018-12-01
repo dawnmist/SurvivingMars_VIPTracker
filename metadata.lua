@@ -3,17 +3,14 @@ return PlaceObj('ModDef', {
 	'id', "Dawnmist_VIPTracker",
 	'steam_id', "1574069378",
 	'image', "Preview.png",
-	'last_changes', [[
-* Rename "Deceased VIPs" to "Departed VIPs"
-* Add VIPs that return to Earth to the list of Departed VIPs.
-]],
+	'last_changes', [[Created a new category report "VIP Activity Log" that records a log of life changes (e.g. new traits, graduating university, getting older, moving domes, etc) for VIPs.]],
 	'author', "Dawnmist",
-	'version', 10,
+	'version', 11,
 	'lua_revision', 237920,
 	'code', {
 		"Code/VIPTracker.lua"
 	},
-	'saved', 1543110572,
+	'saved', 1543635347,
 	'TagInterface', true,
 	'TagTools', true,
 	'TagOther', true,
@@ -35,7 +32,7 @@ When a VIP dies, the mod keeps track of their age at death, the Sol they died, a
 
 When a VIP boards a rocket to return to Earth, the mod keeps track of their age at time of boarding and the Sol that they boarded the rocket. A notification is popped up that allows you to cycle through the names of VIPs that are leaving Mars.
 
-An additional option is also added to the Colony Command Center to view the list of departed VIPs. This list includes both deceased VIPs and VIPs that returned to Earth.
+Two new options are added to the Colony Command Center. The first option - "VIP Activity Log" - provides an ongoing record of changes in the lives of VIPs - items like moving to a new Dome, graduating University, getting older, etc. The second option - "Departed VIPs" - provides a record of the VIPs that have either died or returned to Earth.
 
 [h1]Acknowledgements[/h1]
 
