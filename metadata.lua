@@ -26,6 +26,9 @@ return PlaceObj('ModDef', {
 
 This mod is Gagarin compatible (both base game and with Space Race).
 
+[i][b]New Feature: VIP Activity Log.[/b]
+Keep a log of VIP colonists' life changes, such as moving to a new Dome, graduating University, getting older. Since this is data that wasn't being recorded previously, it will only show life changes that occur after the installation of this update.[/i]
+
 This mod enables you to mark individual colonists as ones that you wish to track. These colonists are given a Quirk called "VIP" so that they can be listed in the Colony Command Center colonist filters. Double-clicking on a colonist in this colonist list will zoom you to where they are.
 
 When a VIP dies, the mod keeps track of their age at death, the Sol they died, and what their cause of death was. A notification is popped up that allows you to zoom to the dead VIP.
