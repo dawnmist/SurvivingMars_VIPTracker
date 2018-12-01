@@ -51,6 +51,8 @@ function UpdateUICommandCenterRow(self, context, row_type)
 		self.ageAtDeath:SetText(context.age)
 		self.deathReason:SetText(context.vip_died_reason)
 		self.idSpecialization:SetImage(context.pin_specialization_icon)
+		self.idButtonIcon:SetImage(context.pin_icon)
+		return
 	elseif row_type == "VIPActivityLog" then
 		self.idButtonIcon:SetImage(context.pin_icon)
 		self.idSpecialization:SetImage(context.pin_specialization_icon)
@@ -72,6 +74,7 @@ end
 
 local function SetupSaveData()
 	GuruTraitBlacklist[VIPTraitId] = true
+
 	if not VIPTracker then
 		VIPTracker = {
 			ColonistsHaveArrived = UICity and UICity.labels.Colonist and #UICity.labels.Colonist > 0 or false,
@@ -83,6 +86,14 @@ local function SetupSaveData()
 		-- fixup death reasons based on changes from initial release
 		DelayedCall(1000, FixupDeathReasons)
 	end
+
+	-- Update list name for addition of colonists that returned to Earth, v9 => v10.
+	if VIPTracker.DeceasedList ~= nil and VIPTracker.DepartedList == nil then
+		VIPTracker.DepartedList = VIPTracker.DeceasedList
+		VIPTracker.DeceasedList = nil
+	end
+
+	-- Create ActivityLog for pre-existing saves, v10 => v11.
 	if VIPTracker.ActivityLog == nil then
 		VIPTracker.ActivityLog = { name = "VIP Activity Log" }
 	end
@@ -183,7 +194,7 @@ end
 
 local function IsLiving(colonist)
 	local isDying = Colonist.IsDying(colonist)
-	return IsValid(colonist) and not isDying and isDying ~= nil
+	return IsValid(colonist) and not isDying and isDying ~= nil and not colonist.leaving
 end
 
 local function ToggleVIP(colonist)
@@ -368,7 +379,7 @@ function OnMsg.ColonistArrived()
 end
 
 function OnMsg.ColonistChangeWorkplace(colonist, new_workplace, old_workplace)
-	if colonist.traits[VIPTraitId] then
+	if colonist.traits[VIPTraitId] and IsLiving(colonist) then
 		AddActivityLog(
 			colonist,
 			T{987234920032, "Changed job from <OldWorkplace> to <NewWorkplace>",
@@ -384,7 +395,7 @@ function OnMsg.ColonistChangeWorkplace(colonist, new_workplace, old_workplace)
 end
 
 function OnMsg.SanityBreakdown(colonist)
-	if colonist.traits[VIPTraitId] then
+	if colonist.traits[VIPTraitId] and IsLiving(colonist) then
 		AddActivityLog(colonist, T{987234920034, "Suffered a Sanity breakdown"})
 	end
 end
@@ -395,7 +406,12 @@ function Colonist.SetSpecialization(self, specialist, init)
 	if originalSetSpecialization ~= nil then
 		originalSetSpecialization(self, specialist, init)
 	end
-	if self.traits[VIPTraitId] and init == nil and specialist ~= nil and specialist ~= "none" then
+	if self.traits[VIPTraitId]
+		and IsLiving(colonist)
+		and init == nil
+		and specialist ~= nil
+		and specialist ~= "none"
+	then
 		AddActivityLog(
 			colonist,
 			T{987234920035, "Graduated as a <Specialist>", Specialist = specialist}
@@ -404,24 +420,27 @@ function Colonist.SetSpecialization(self, specialist, init)
 end
 
 function OnMsg.ColonistJoinsDome(colonist, dome)
-	if colonist.traits[VIPTraitId] then
+	if colonist.traits[VIPTraitId] and IsLiving(colonist) then
 		AddActivityLog(colonist, T{987234920036, "Moved to <Dome>", Dome = dome.name})
 	end
 end
 
 function OnMsg.ColonistAddTrait(colonist, trait_id, init)
-	if (colonist.traits[VIPTraitId] or trait_id == VIPTraitId) and init == nil then
+	if (colonist.traits[VIPTraitId] or trait_id == VIPTraitId)
+		and IsLiving(colonist)
+		and init == nil
+	then
 		local trait = TraitPresets[trait_id]
 		if not trait then
 			return
 		end
 
-		if trait_id == VIPTraitId then
-			AddActivityLog(colonist, T{987234920057,"Became a VIP"})
+		if trait_id == VIPTraitId or trait_id == "Renegade" then
+			AddActivityLog(colonist, T{987234920057, "Became a <Trait>", Trait = trait.display_name})
 		elseif trait.group == "Age Group" then
 			AddActivityLog(colonist, T{987234920033, "Aged to <NewAge>", NewAge = trait.display_name})
 		elseif trait.group == "Specialization" then
-			AddActivityLog(colonist, T{987234920035,"Graduated as a <Specialist>", Specialist = trait.display_name})
+			AddActivityLog(colonist, T{987234920035, "Graduated as a <Specialist>", Specialist = trait.display_name})
 		else
 			AddActivityLog(colonist, T{987234920037, "Gained the <Trait> trait", Trait = trait.display_name})
 		end
@@ -429,14 +448,14 @@ function OnMsg.ColonistAddTrait(colonist, trait_id, init)
 end
 
 function OnMsg.ColonistRemoveTrait(colonist, trait_id)
-	if (colonist.traits[VIPTraitId] or trait_id == VIPTraitId) then
+	if (colonist.traits[VIPTraitId] or trait_id == VIPTraitId) and IsLiving(colonist) then
 		local trait = TraitPresets[trait_id]
 		if not trait then
 			return
 		end
 
-		if trait_id == VIPTraitId then
-			AddActivityLog(colonist, T{987234920058, "Is no longer a VIP"})
+		if trait_id == VIPTraitId or trait_id == "Renegade" then
+			AddActivityLog(colonist, T{987234920058, "Is no longer a <Trait>", Trait = trait.display_name})
 		elseif trait.group ~= "Age Group" and trait.group ~= "Specialization" then
 			AddActivityLog(
 				colonist,
@@ -447,7 +466,7 @@ function OnMsg.ColonistRemoveTrait(colonist, trait_id)
 end
 
 function OnMsg.ColonistStatusEffect(colonist, status_effect, bApply, now)
-	if colonist.traits[VIPTraitId] then
+	if colonist.traits[VIPTraitId] and IsLiving(colonist) then
 		if status_effect == "StatusEffect_Starving" then
 			AddActivityLog(
 				colonist,
@@ -458,7 +477,9 @@ function OnMsg.ColonistStatusEffect(colonist, status_effect, bApply, now)
 			AddActivityLog(
 				colonist,
 				bApply and T{987234920042, "Became homeless"}
-				or T{987234920043, "Is no longer homeless"}
+				or T{987234920043, "Moved into the <Residence>",
+					Residence = colonist:GetResidenceDisplayName()
+				}
 			)
 		elseif status_effect == "StatusEffect_Earthsick" then
 			AddActivityLog(
@@ -496,6 +517,7 @@ function OnMsg.ColonistDied(colonist, reason)
 		colonist.vip_died_reason = T{987234920004, "<Reason>", Reason = GetDeathReason(colonist)}
 		table.insert(VIPTracker.DepartedList, 1, colonist)
 		VIPDeathNotification(colonist, reason)
+		AddActivityLog(colonist, colonist.vip_died_reason)
 	end
 end
 
@@ -505,6 +527,13 @@ function OnMsg.ColonistLeavingMars(colonist, rocket)
 		colonist.vip_died_sol = UICity.day
 		colonist.vip_died_reason = T{987234920029, "Abandoned Mars to return to Earth"}
 		table.insert(VIPTracker.DepartedList, 1, colonist)
+		AddActivityLog(colonist, colonist.vip_died_reason)
+	end
+end
+
+function OnMsg.ColonistBorn(colonist, event)
+	if colonist.traits[VIPTraitId] and event == "reborn" then
+		AddActivityLog(colonist, T{987234920059, "Reborn through Project Phoenix"})
 	end
 end
 
@@ -514,13 +543,4 @@ end
 
 function OnMsg.LoadGame()
 	SetupSaveData()
-end
-
-function OnMsg.PersistLoad(data)
-	local VIPTracker = VIPTracker
-	if VIPTracker.DeceasedList ~= nil and VIPTracker.DepartedList == nil then
-		VIPTracker.DepartedList = VIPTracker.DeceasedList
-		VIPTracker.DeceasedList = nil
-		print("Number of departed VIPs:", VIPTracker.DepartedList and #VIPTracker.DepartedList or 0)
-	end
 end
