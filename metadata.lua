@@ -15,11 +15,11 @@ return PlaceObj('ModDef', {
 	'TagTools', true,
 	'TagOther', true,
 	'ignore_files', {
-		"Images/*",
-		".git/*",
-		".gitattributes",
-		"README.md",
-		"UI/ColonistIconTemplate.xcf"
+		"*Images/*",
+		"*.git/*",
+		"*.gitattributes",
+		"*README.md",
+		"*UI/ColonistIconTemplate.xcf"
 	},
 	'description', [[
 [h1]VIP Tracker[/h1]
