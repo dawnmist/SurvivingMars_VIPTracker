@@ -16,10 +16,14 @@ When a VIP boards a rocket to return to Earth, the mod keeps track of their age 
 A notification is popped up that allows you to cycle through the names of VIPs that are leaving Mars.  
 ![Notification](Images/DepartingNotificationPreview.png)  
 
-An additional option is also added to the Colony Command Center to view the list of departed VIPs.
-This list includes both deceased VIPs and VIPs that returned to Earth.  
-![Colony Command Center Option](Images/CommandCenterOption.png)  
-![Deceased VIP List](Images/DepartedList.png)  
+Two new options are added to the Colony Command Center. The first option:  
+![VIP Activity Log option](Images/CommandCenterActivityLogOption.png)  
+provides an ongoing record of changes in the lives of VIPs - items like moving to a new Dome, graduating University, getting older, etc.  
+![VIP Activity Log](Images/VIPActivityLog.png)  
+The second option:  
+![Departed VIPs option](Images/CommandCenterDepartedVIPsOption.png)  
+provides a record of the VIPs that have either died or returned to Earth.  
+![Departed VIPs](Images/DepartedList.png)
 
 ## Acknowledgements
 
