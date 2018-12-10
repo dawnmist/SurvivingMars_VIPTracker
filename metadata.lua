@@ -3,14 +3,17 @@ return PlaceObj('ModDef', {
 	'id', "Dawnmist_VIPTracker",
 	'steam_id', "1574069378",
 	'image', "Preview.png",
-	'last_changes', [[Double-clicking a colonist in the VIP Activity Log now takes you to that colonist provided that they are still alive and on Mars.]],
+	'last_changes', [[
+* Improve activity log for moving domes
+* Fix bug in activity log for graduation
+	]],
 	'author', "Dawnmist",
-	'version', 12,
+	'version', 13,
 	'lua_revision', 238455,
 	'code', {
 		"Code/VIPTracker.lua"
 	},
-	'saved', 1543644845,
+	'saved', 1544427481,
 	'TagInterface', true,
 	'TagTools', true,
 	'TagOther', true,

@@ -441,7 +441,7 @@ function Colonist.SetSpecialization(self, specialist, init)
 		originalSetSpecialization(self, specialist, init)
 	end
 	if self.traits[VIPTraitId]
-		and IsLiving(colonist)
+		and IsLiving(self)
 		and init == nil
 		and specialist ~= nil
 		and specialist ~= "none"
@@ -453,9 +453,23 @@ function Colonist.SetSpecialization(self, specialist, init)
 	end
 end
 
-function OnMsg.ColonistJoinsDome(colonist, dome)
-	if colonist.traits[VIPTraitId] and IsLiving(colonist) then
-		AddActivityLog(colonist, T{987234920036, "Moved to <Dome>", Dome = dome.name})
+function OnMsg.ColonistLeavesDome(colonist, old_dome)
+	if IsLiving(colonist) and colonist.traits[VIPTraitId] then
+		CreateGameTimeThread(function(colonist, old_dome)
+			while true do
+				local ok, col2, new_dome = WaitMsg("ColonistJoinsDome", 30000)
+				if not IsValid(colonist) or not IsLiving(colonist) then
+					break
+				elseif IsValid(col2) and IsLiving(col2) and colonist == col2 then
+					local Dome1 = IsValid(old_dome) and old_dome.name or T{987234920061, "unknown dome"}
+					local Dome2 = IsValid(new_dome) and new_dome.name or T{987234920061, "unknown dome"}
+					AddActivityLog(
+						colonist,
+						T{987234920060, "Moved from <Dome1> to <Dome2>", Dome1 = Dome1, Dome2 = Dome2})
+					break
+				end
+			end
+		end, colonist, old_dome)
 	end
 end
 
