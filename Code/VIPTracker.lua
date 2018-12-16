@@ -98,6 +98,14 @@ local function SetupSaveData()
 		VIPTracker.ActivityLog = { name = "VIP Activity Log" }
 	end
 
+	-- clean out oops during development
+	-- for i=#(VIPTracker.ActivityLog or empty_table),1,-1 do
+	-- 	local log = VIPTracker.ActivityLog[i]
+	-- 	if IsValid(log.colonist) and not log.colonist.traits[VIPTraitId] then
+	-- 		table.remove(VIPTracker.ActivityLog, i)
+	-- 	end
+	-- end
+
 	VIPTracker.Version = VIPTrackerMod.current_version
 end
 
@@ -434,21 +442,15 @@ function OnMsg.SanityBreakdown(colonist)
 	end
 end
 
--- Would prefer to use "OnMsg.NewSpecialist" directly, but it doesn't provide the colonist info.
-local originalSetSpecialization = Colonist.SetSpecialization
-function Colonist.SetSpecialization(self, specialist, init)
-	if originalSetSpecialization ~= nil then
-		originalSetSpecialization(self, specialist, init)
-	end
-	if self.traits[VIPTraitId]
-		and IsLiving(self)
-		and init == nil
-		and specialist ~= nil
-		and specialist ~= "none"
+function OnMsg.NewSpecialist(colonist)
+	if colonist.traits[VIPTraitId]
+		and IsLiving(colonist)
+		and colonist.specialist ~= nil
+		and colonist.specialist ~= "none"
 	then
 		AddActivityLog(
 			colonist,
-			T{987234920035, "Graduated as a <Specialist>", Specialist = specialist}
+			T{987234920035, "Graduated as a <Specialist>", Specialist = colonist.specialist}
 		)
 	end
 end
