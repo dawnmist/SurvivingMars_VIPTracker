@@ -4,16 +4,15 @@ return PlaceObj('ModDef', {
 	'steam_id', "1574069378",
 	'image', "Preview.png",
 	'last_changes', [[
-* Improve activity log for moving domes
-* Fix bug in activity log for graduation
+Use updated "NewSpecialist" message to record graduations.
 	]],
 	'author', "Dawnmist",
-	'version', 13,
-	'lua_revision', 238455,
+	'version', 14,
+	'lua_revision', 238808,
 	'code', {
 		"Code/VIPTracker.lua"
 	},
-	'saved', 1544427481,
+	'saved', 1544934191,
 	'TagInterface', true,
 	'TagTools', true,
 	'TagOther', true,
