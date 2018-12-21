@@ -11,6 +11,10 @@ local ColonistActiveVIPIcon = mod_dir.."UI/AllGold.png"
 local ColonistInactiveVIPIcon = mod_dir.."UI/AllGrey.png"
 local DeathNotificationIcon = mod_dir.."UI/VIPDeathNotificationIcon.png"
 
+-- Compatibility with SkiRich's IA mod - better trait gain/loss messages.
+local IAtraitParolee       = "Parolee"
+local IAtraitFormerOfficer = "Former_Officer"
+
 -- Non-saved global
 VIPTrackerMod = {
 	current_version = Mods[ModId].version,
@@ -485,12 +489,16 @@ function OnMsg.ColonistAddTrait(colonist, trait_id, init)
 			return
 		end
 
-		if trait_id == VIPTraitId or trait_id == "Renegade" then
+		if trait_id == VIPTraitId
+			or trait_id == "Renegade"
+			or trait_id == IAtraitFormerOfficer
+			or trait_id == IAtraitParolee
+		then
 			AddActivityLog(colonist, T{987234920057, "Became a <Trait>", Trait = trait.display_name})
 		elseif trait.group == "Age Group" then
 			AddActivityLog(colonist, T{987234920033, "Aged to <NewAge>", NewAge = trait.display_name})
 		elseif trait.group == "Specialization" then
-			AddActivityLog(colonist, T{987234920035, "Graduated as a <Specialist>", Specialist = trait.display_name})
+			-- already handled in NewSpecialist
 		else
 			AddActivityLog(colonist, T{987234920037, "Gained the <Trait> trait", Trait = trait.display_name})
 		end
@@ -504,7 +512,11 @@ function OnMsg.ColonistRemoveTrait(colonist, trait_id)
 			return
 		end
 
-		if trait_id == VIPTraitId or trait_id == "Renegade" then
+		if trait_id == VIPTraitId
+			or trait_id == "Renegade"
+			or trait_id == IAtraitFormerOfficer
+			or trait_id == IAtraitParolee
+		then
 			AddActivityLog(colonist, T{987234920058, "Is no longer a <Trait>", Trait = trait.display_name})
 		elseif trait.group ~= "Age Group" and trait.group ~= "Specialization" then
 			AddActivityLog(
