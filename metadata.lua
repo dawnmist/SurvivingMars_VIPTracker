@@ -1,28 +1,27 @@
 return PlaceObj('ModDef', {
 	'title', "VIP Tracker",
-	'id', "Dawnmist_VIPTracker",
-	'steam_id', "1574069378",
-	'image', "Preview.png",
-	'last_changes', [[
-Add appropriate VIP event logging for SkiRich's IA mod.
-	]],
-	'author', "Dawnmist",
-	'version', 15,
-	'lua_revision', 238808,
-	'code', {
-		"Code/VIPTracker.lua"
-	},
-	'saved', 1545372458,
-	'TagInterface', true,
-	'TagTools', true,
-	'TagOther', true,
+'image', "Preview.png",
+	'last_changes', "Add appropriate VIP event logging for SkiRich's IA mod.\n	",
 	'ignore_files', {
 		"*Images/*",
 		"*.git/*",
 		"*.gitattributes",
 		"*README.md",
-		"*UI/ColonistIconTemplate.xcf"
+		"*UI/ColonistIconTemplate.xcf",
 	},
+	'id', "Dawnmist_VIPTracker",
+	'steam_id', "1574069378",
+	'pops_desktop_uuid', "ba93d8c2-8fc8-45e0-bc19-5505c05c6014",
+	'pops_any_uuid', "2059cfcb-6603-457a-b6f4-0952f821df06",
+	'author', "Dawnmist",
+	'version', 16,
+	'lua_revision', 233360,
+	'saved_with_revision', 240905,
+	'code', {"Code/VIPTracker.lua"},
+	'saved', 1553829341,
+	'TagInterface', true,
+	'TagTools', true,
+	'TagOther', true,
 	'description', [[
 [h1]VIP Tracker[/h1]
 
