@@ -17,7 +17,7 @@ PlaceObj('ModItemXTemplate', {
 	}, {
 		PlaceObj('XTemplateTemplate', {
 			'__template', "CommandCenterTitle",
-			'Title', T{987234920023, --[[ModItemXTemplate VIPDeadOverview Title]] "DEPARTED VIPS"},
+			'Title', T(987234920023, --[[ModItemXTemplate VIPDeadOverview Title]] "DEPARTED VIPS"),
 		}),
 		PlaceObj('XTemplateWindow', {
 			'__class', "XContentTemplate",
@@ -44,9 +44,8 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{854866001515, --[[ModItemXTemplate VIPDeadOverview Text]] "Name"},
+						'Text', T(854866001515, --[[ModItemXTemplate VIPDeadOverview Text]] "Name"),
 						'WordWrap', false,
-						'TextHAlign', "left",
 						'TextVAlign', "center",
 					}),
 					PlaceObj('XTemplateWindow', {
@@ -60,7 +59,7 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{987234920024, --[[ModItemXTemplate VIPDeadOverview Text]] "Died/Left"},
+						'Text', T(987234920024, --[[ModItemXTemplate VIPDeadOverview Text]] "Died/Left"),
 						'WordWrap', false,
 						'TextHAlign', "center",
 						'TextVAlign', "center",
@@ -76,7 +75,7 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{987234920025, --[[ModItemXTemplate VIPDeadOverview Text]] "Age"},
+						'Text', T(987234920025, --[[ModItemXTemplate VIPDeadOverview Text]] "Age"),
 						'WordWrap', false,
 						'TextHAlign', "center",
 						'TextVAlign', "center",
@@ -92,9 +91,8 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{987234920026, --[[ModItemXTemplate VIPDeadOverview Text]] "Cause"},
+						'Text', T(987234920026, --[[ModItemXTemplate VIPDeadOverview Text]] "Cause"),
 						'WordWrap', false,
-						'TextHAlign', "left",
 						'TextVAlign', "center",
 					}),
 					}),
@@ -118,11 +116,11 @@ PlaceObj('ModItemXTemplate', {
 							local DepartedList = VIPTracker.DepartedList
 							parent:ResolveId("idTitle"):SetTitle(T{987234920027, "<white><count></white> DEPARTED VIPS", count = #DepartedList})
 							return DepartedList
-						end,
+end,
 						'__context', function (parent, context, item, i, n) return item end,
 						'run_before', function (parent, context, item, i, n)
 							NewXVirtualContent(parent, context, "VIPDeadOverviewRow", 1079, 46)
-						end,
+end,
 					}),
 					}),
 				PlaceObj('XTemplateWindow', {
@@ -135,13 +133,13 @@ PlaceObj('ModItemXTemplate', {
 					'HandleMouse', false,
 					'TextStyle', "InGameTitle",
 					'Translate', true,
-					'Text', T{539668092498, --[[ModItemXTemplate VIPDeadOverview Text]] "Empty list"},
+					'Text', T(539668092498, --[[ModItemXTemplate VIPDeadOverview Text]] "Empty list"),
 				}),
 				PlaceObj('XTemplateCode', {
 					'run', function (self, parent, context)
 						local list = parent:ResolveId("idList")
 						parent:ResolveId("idNoResults"):SetVisible(#list == 0)
-					end,
+end,
 				}),
 				PlaceObj('XTemplateTemplate', {
 					'__template', "ScrollbarNew",
@@ -153,7 +151,7 @@ PlaceObj('ModItemXTemplate', {
 			}),
 		PlaceObj('XTemplateAction', {
 			'ActionId', "back",
-			'ActionName', T{216830668315, --[[ModItemXTemplate VIPDeadOverview ActionName]] "BACK"},
+			'ActionName', T(216830668315, --[[ModItemXTemplate VIPDeadOverview ActionName]] "BACK"),
 			'ActionToolbar', "ActionBar",
 			'ActionShortcut', "Escape",
 			'ActionGamepad', "ButtonB",
@@ -164,17 +162,17 @@ PlaceObj('ModItemXTemplate', {
 PlaceObj('ModItemXTemplate', {
 	__is_kind_of = "XContextControl",
 	comment = "VIPDeadOverviewRow",
-	id = "VIPDeadOverviewRow",
 	group = "CCC",
+	id = "VIPDeadOverviewRow",
 	PlaceObj('XTemplateTemplate', {
 		'__template', "CommandCenterRow",
-		'RolloverText', T{602527858023, --[[ModItemXTemplate  RolloverText]] "<OverviewInfo>"},
-		'RolloverHint', T{221573023887, --[[ModItemXTemplate  RolloverHint]] "<image UI/Infopanel/left_click.tga 1400><image UI/Infopanel/left_click.tga 1400> Select"},
-		'RolloverHintGamepad', T{986296804256, --[[ModItemXTemplate  RolloverHintGamepad]] "<image UI/PS4/Cross.tga> Select"},
+		'RolloverText', T(602527858023, --[[ModItemXTemplate VIPDeadOverviewRow RolloverText]] "<OverviewInfo>"),
+		'RolloverHint', T(221573023887, --[[ModItemXTemplate VIPDeadOverviewRow RolloverHint]] "<image UI/Infopanel/left_click.tga 1400><image UI/Infopanel/left_click.tga 1400> Select"),
+		'RolloverHintGamepad', T(986296804256, --[[ModItemXTemplate VIPDeadOverviewRow RolloverHintGamepad]] "<image UI/PS4/Cross.tga> Select"),
 		'OnContextUpdate', function (self, context, ...)
 			UpdateUICommandCenterRow(self, context, "deadVIP")
 			XContextControl.OnContextUpdate(self, context, ...)
-		end,
+end,
 	}, {
 		PlaceObj('XTemplateWindow', {
 			'__class', "XText",
@@ -186,7 +184,7 @@ PlaceObj('ModItemXTemplate', {
 			'MaxWidth', 255,
 			'TextStyle', "OverviewItemName",
 			'Translate', true,
-			'Text', T{447555686252, --[[ModItemXTemplate  Text]] "<DisplayName>"},
+			'Text', T(447555686252, --[[ModItemXTemplate VIPDeadOverviewRow Text]] "<DisplayName>"),
 			'Shorten', true,
 		}),
 		PlaceObj('XTemplateWindow', {
@@ -225,7 +223,6 @@ PlaceObj('ModItemXTemplate', {
 			'MaxWidth', 600,
 			'TextStyle', "OverviewItemValue",
 			'WordWrap', false,
-			'TextHAlign', "left",
 			'TextVAlign', "center",
 		}),
 		}),
@@ -244,7 +241,7 @@ PlaceObj('ModItemXTemplate', {
 	}, {
 		PlaceObj('XTemplateTemplate', {
 			'__template', "CommandCenterTitle",
-			'Title', T{987234920054, "VIP ACTIVITY LOG"},
+			'Title', T(987234920054, --[[ModItemXTemplate VIPActivityOverview Title]] "VIP ACTIVITY LOG"),
 		}),
 		PlaceObj('XTemplateWindow', {
 			'__class', "XContentTemplate",
@@ -271,9 +268,8 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{854866001515, --[[ModItemXTemplate VIPActivityOverview Text]] "Name"},
+						'Text', T(854866001515, --[[ModItemXTemplate VIPActivityOverview Text]] "Name"),
 						'WordWrap', false,
-						'TextHAlign', "left",
 						'TextVAlign', "center",
 					}),
 					PlaceObj('XTemplateWindow', {
@@ -287,7 +283,7 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{987234920055, --[[ModItemXTemplate VIPActivityOverview Text]] "Sol"},
+						'Text', T(987234920055, --[[ModItemXTemplate VIPActivityOverview Text]] "Sol"),
 						'WordWrap', false,
 						'TextHAlign', "center",
 						'TextVAlign', "center",
@@ -303,9 +299,8 @@ PlaceObj('ModItemXTemplate', {
 						'HandleMouse', false,
 						'TextStyle', "OverviewItemSection",
 						'Translate', true,
-						'Text', T{987234920056, --[[ModItemXTemplate VIPDeadOverview Text]] "Activity"},
+						'Text', T(987234920056, --[[ModItemXTemplate VIPActivityOverview Text]] "Activity"),
 						'WordWrap', false,
-						'TextHAlign', "left",
 						'TextVAlign', "center",
 					}),
 					}),
@@ -327,11 +322,11 @@ PlaceObj('ModItemXTemplate', {
 						'comment', "VIPActivityLogs",
 						'array', function (parent, context)
 							return VIPTracker.ActivityLog
-						end,
+end,
 						'__context', function (parent, context, item, i, n) return item end,
 						'run_before', function (parent, context, item, i, n)
 							NewXVirtualContent(parent, context, "VIPActivityOverviewRow", 1079, 46)
-						end,
+end,
 					}),
 					}),
 				PlaceObj('XTemplateWindow', {
@@ -344,13 +339,13 @@ PlaceObj('ModItemXTemplate', {
 					'HandleMouse', false,
 					'TextStyle', "InGameTitle",
 					'Translate', true,
-					'Text', T{539668092498, --[[ModItemXTemplate VIPActivityOverview Text]] "Empty list"},
+					'Text', T(539668092498, --[[ModItemXTemplate VIPActivityOverview Text]] "Empty list"),
 				}),
 				PlaceObj('XTemplateCode', {
 					'run', function (self, parent, context)
 						local list = parent:ResolveId("idList")
 						parent:ResolveId("idNoResults"):SetVisible(#list == 0)
-					end,
+end,
 				}),
 				PlaceObj('XTemplateTemplate', {
 					'__template', "ScrollbarNew",
@@ -362,7 +357,7 @@ PlaceObj('ModItemXTemplate', {
 			}),
 		PlaceObj('XTemplateAction', {
 			'ActionId', "back",
-			'ActionName', T{216830668315, --[[ModItemXTemplate VIPActivityOverview ActionName]] "BACK"},
+			'ActionName', T(216830668315, --[[ModItemXTemplate VIPActivityOverview ActionName]] "BACK"),
 			'ActionToolbar', "ActionBar",
 			'ActionShortcut', "Escape",
 			'ActionGamepad', "ButtonB",
@@ -373,14 +368,14 @@ PlaceObj('ModItemXTemplate', {
 PlaceObj('ModItemXTemplate', {
 	__is_kind_of = "XContextControl",
 	comment = "VIPActivityOverviewRow",
-	id = "VIPActivityOverviewRow",
 	group = "CCC",
+	id = "VIPActivityOverviewRow",
 	PlaceObj('XTemplateTemplate', {
 		'__template', "CommandCenterRow",
 		'OnContextUpdate', function (self, context, ...)
 			UpdateUICommandCenterRow(self, context, "VIPActivityLog")
 			XContextControl.OnContextUpdate(self, context, ...)
-		end,
+end,
 	}, {
 		PlaceObj('XTemplateWindow', {
 			'__class', "XText",
@@ -418,7 +413,6 @@ PlaceObj('ModItemXTemplate', {
 			'MaxWidth', 700,
 			'TextStyle', "OverviewItemValue",
 			'WordWrap', false,
-			'TextHAlign', "left",
 			'TextVAlign', "center",
 		}),
 		}),
