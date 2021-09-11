@@ -3,7 +3,7 @@ GlobalVar("VIPTracker", false)
 
 local ModId = "Dawnmist_VIPTracker"
 local VIPTraitId = "VIPTrackerTrait"
-local VIPDeadId = "VIPTrackerDead"
+local VIPDepartedId = "VIPTrackerDead"
 local VIPActivityLogId = "VIPTrackerActivityLog"
 local mod_dir = CurrentModPath
 
@@ -17,6 +17,10 @@ local IAtraitFormerOfficer = "Former_Officer"
 
 -- Non-saved global
 VIPTrackerMod = {
+	ActivityOverview = "VIPTrackerActivityOverview",
+	ActivityOverviewRow = "VIPTrackerActivityOverviewRow",
+	DepartedOverview = "VIPTrackerDepartedOverview",
+	DepartedOverviewRow = "VIPTrackerDepartedOverviewRow",
 	current_version = Mods[ModId].version,
 	Functions = {},
 }
@@ -279,88 +283,39 @@ local function AddVIPToggleButton()
 	end
 end
 
-local function AddVIPDeadCategory()
+local function AddCccCategory(sort_key, id, template_name, display_name, title)
 	local XTemplates = XTemplates
 	local PlaceObj = PlaceObj
 	local Presets = Presets
+	local VIPTrackerMod = VIPTrackerMod
 
-	if not Presets.ColonyControlCenterCategory.Default[VIPDeadId] then
-		Presets.ColonyControlCenterCategory.Default[VIPDeadId] = PlaceObj('ColonyControlCenterCategory', {
-			SortKey = 90000,
-			display_name = T{987234920022, "Departed VIPs"},
-			group = "Default",
-			id = VIPDeadId,
-			template_name = "VIPDeadOverview",
-			title = T{987234920023, "DEPARTED VIPS"},
-		})
+	if Presets.ColonyControlCenterCategory.Default[id] then
+		return
 	end
 
-	local CCC = XTemplates.ColonyControlCenter[1]
-	for i=1, #CCC do
-		if CCC[i].Id == "idContent" then
-			local idContent = CCC[i]
-			local modeNum
-			local mode = PlaceObj('XTemplateMode', {
-				'mode', VIPDeadId,
-			}, {
-				PlaceObj('XTemplateTemplate', {
-					'__template', "VIPDeadOverview"
-				})
-			})
-			for m = 1, #idContent do
-				if idContent[m].mode == VIPDeadId then
-					modeNum = m
-					break
-				end
-			end
-			if modeNum ~= nil then
-				idContent[modeNum] = mode
-			else
-				table.insert(idContent, mode)
+	Presets.ColonyControlCenterCategory.Default[id] = PlaceObj('ColonyControlCenterCategory', {
+			SortKey = sort_key,
+			id = id,
+			template_name = template_name,
+			display_name = display_name,
+			title = title,
+		})
+
+	local CCC = XTemplates.ColonyControlCenter
+	if CCC then
+		local idContent
+		for i, child in ipairs(CCC[1] or empty_table) do
+			if IsKindOf(child, "XTemplateWindow") and child.Id == "idContent" then
+				idContent = child
+				break
 			end
 		end
-	end
-end
-
-local function AddVIPActivityLogCategory()
-	local XTemplates = XTemplates
-	local PlaceObj = PlaceObj
-	local Presets = Presets
-
-	if not Presets.ColonyControlCenterCategory.Default[VIPActivityLogId] then
-		Presets.ColonyControlCenterCategory.Default[VIPActivityLogId] = PlaceObj('ColonyControlCenterCategory', {
-			SortKey = 89000,
-			display_name = T{987234920053,"VIP Activity Log"},
-			group = "Default",
-			id = VIPActivityLogId,
-			template_name = "VIPActivityOverview",
-			title = T{987234920054, "VIP ACTIVITY LOG"},
-		})
-	end
-
-	local CCC = XTemplates.ColonyControlCenter[1]
-	for i=1, #CCC do
-		if CCC[i].Id == "idContent" then
-			local idContent = CCC[i]
-			local modeNum
-			local mode = PlaceObj('XTemplateMode', {
-				'mode', VIPActivityLogId,
-			}, {
-				PlaceObj('XTemplateTemplate', {
-					'__template', "VIPActivityOverview"
-				})
+		if idContent then
+			local new_mode = PlaceObj('XTemplateMode', { 'mode', id, },
+			{
+				PlaceObj('XTemplateTemplate', { '__template', template_name })
 			})
-			for m = 1, #idContent do
-				if idContent[m].mode == VIPActivityLogId then
-					modeNum = m
-					break
-				end
-			end
-			if modeNum ~= nil then
-				idContent[modeNum] = mode
-			else
-				table.insert(idContent, mode)
-			end
+			table.insert(idContent, new_mode)
 		end
 	end
 end
@@ -409,19 +364,31 @@ local function AddActivityLog(colonist, msg)
 end
 
 -- OnMsg functions
-function OnMsg.ClassesPostprocess()
-	CreateVIPTrait()
-	AddVIPToggleButton()
-	AddVIPActivityLogCategory()
-	AddVIPDeadCategory()
+function OnMsg.ClassesBuilt()
+	local VIPTrackerMod = VIPTrackerMod
+	local ActivityOverview = VIPTrackerMod.ActivityOverview
+	local DepartedOverview = VIPTrackerMod.DepartedOverview
+
+	AddCccCategory(
+		89000,
+		VIPActivityLogId,
+		ActivityOverview, 
+		T{987234920053,"VIP Activity Log"},
+		T{987234920054, "VIP ACTIVITY LOG"}
+	)
+	AddCccCategory(
+		90000,
+		VIPDepartedId,
+		DepartedOverview,
+		T{987234920022, "Departed VIPs"},
+		T{987234920023, "DEPARTED VIPS"}
+	)
 	AdjustActivityLogSelect()
 end
 
-function OnMsg.ColonistArrived()
-	local VIPTracker = VIPTracker
-	if not VIPTracker.ColonistsHaveArrived then
-		VIPTracker.ColonistsHaveArrived = true
-	end
+function OnMsg.ClassesPostprocess()
+	CreateVIPTrait()
+	AddVIPToggleButton()
 end
 
 function OnMsg.ColonistChangeWorkplace(colonist, new_workplace, old_workplace)

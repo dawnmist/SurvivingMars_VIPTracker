@@ -1,6 +1,6 @@
 # VIP Tracker
 
-This mod is Gagarin compatible (both base game and with Space Race).
+This mod is Below and Beyond compatible (base game, or with any expansions).
 
 This mod enables you to mark individual colonists as ones that you wish to track.  
 ![VIP Toggle](Preview.png)  
@@ -34,5 +34,5 @@ Other people that helped with working out how to make parts of the mod work incl
 
 ## Downloading the mod
 
-Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=1574069378  
-NexusMods: https://www.nexusmods.com/survivingmars/mods/99
+Steam: <https://steamcommunity.com/sharedfiles/filedetails/?id=1574069378>  
+NexusMods: <https://www.nexusmods.com/survivingmars/mods/99>
